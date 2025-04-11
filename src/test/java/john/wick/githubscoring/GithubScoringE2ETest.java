@@ -9,15 +9,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -119,5 +117,16 @@ class GithubScoringE2ETest {
                         .param("createdAfter", "not-a-date"))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void invalidSortDirectionShouldReturnBadRequest() throws Exception {
+        mockMvc.perform(get("/api/repositories/search")
+                        .param("language", "java")
+                        .param("keyword", "spring")
+                        .param("sortDirection", "invalid_direction"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("Sort direction must be either 'asc' or 'desc'")));
+    }
+
 
 }

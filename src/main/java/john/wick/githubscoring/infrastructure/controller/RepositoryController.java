@@ -4,10 +4,11 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import john.wick.githubscoring.api.RepositoryControllerAPI;
 import john.wick.githubscoring.domain.model.RepoSearchCriteria;
 import john.wick.githubscoring.domain.port.RepositorySearchService;
 import john.wick.githubscoring.infrastructure.client.dto.PaginatedRepositories;
-import john.wick.githubscoring.infrastructure.controller.dto.RepositoryMapper;
+import john.wick.githubscoring.infrastructure.controller.dto.RepositoryDtoMapper;
 import john.wick.githubscoring.infrastructure.controller.dto.RepositorySearchResultDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -46,7 +47,8 @@ public class RepositoryController implements RepositoryControllerAPI {
             String keyword,
             @RequestParam(defaultValue = "1") @Min(1) int page,
             @RequestParam(defaultValue = "20") @Max(100) int size,
-            @RequestParam(defaultValue = "desc") String sortDirection
+            @RequestParam(defaultValue = "desc") @Pattern(regexp = "^(asc|desc)$", message = "Sort direction must be either 'asc' or 'desc'")
+            String sortDirection
     ) {
 
         LocalDate createdAfterAsDate = getCreatedAtParam(createdAfter);
@@ -54,10 +56,10 @@ public class RepositoryController implements RepositoryControllerAPI {
         RepoSearchCriteria criteria = new RepoSearchCriteria(language, createdAfterAsDate, keyword, page, size, sortDirection);
         if (criteria.hasAtLeastOneCriteria()) {
             PaginatedRepositories paginatedResult = repositorySearchService.searchRepositories(criteria);
-            RepositorySearchResultDTO resultDto = RepositoryMapper.toSearchResultDto(
+            RepositorySearchResultDTO resultDto = RepositoryDtoMapper.toSearchResultDto(
                     paginatedResult.getRepositories(),
                     paginatedResult.getTotalNbRepo(),
-                    paginatedResult.getTotalNbPage(),
+                    paginatedResult.gettotalNbPage(),
                     paginatedResult.getCurrentPage());
             return ResponseEntity.ok(resultDto);
         } else {

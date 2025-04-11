@@ -7,13 +7,13 @@ import java.util.List;
 public class PaginatedRepositories {
     List<Repository> repositories;
     int currentPage;
-    int TotalNbPage;
+    int totalNbPage;
     int totalNbRepo;
 
-    public PaginatedRepositories(List<Repository> repositories, int currentPage, int TotalNbPage, int totalNbRepo) {
+    public PaginatedRepositories(List<Repository> repositories, int currentPage, int totalNbPage, int totalNbRepo) {
         this.repositories = repositories;
         this.currentPage = currentPage;
-        this.TotalNbPage = TotalNbPage;
+        this.totalNbPage = totalNbPage;
         this.totalNbRepo = totalNbRepo;
     }
 
@@ -29,8 +29,8 @@ public class PaginatedRepositories {
         return currentPage;
     }
 
-    public int getTotalNbPage() {
-        return TotalNbPage;
+    public int gettotalNbPage() {
+        return totalNbPage;
     }
 
     public int getTotalNbRepo() {

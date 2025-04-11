@@ -8,8 +8,6 @@ import john.wick.githubscoring.domain.port.RepositorySearchService;
 import john.wick.githubscoring.infrastructure.client.dto.PaginatedRepositories;
 import org.springframework.stereotype.Component;
 
-import java.util.Comparator;
-
 @Component
 public class RepositorySearchServiceImpl implements RepositorySearchService {
 
@@ -42,10 +40,6 @@ public class RepositorySearchServiceImpl implements RepositorySearchService {
                     repo.getUpdatedAt()
             ));
         }
-
-        response.setRepositories(response.getRepositories().stream()
-                .sorted(Comparator.comparing(Repository::getScore).reversed())
-                .toList());
         return response;
     }
 

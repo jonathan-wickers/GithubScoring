@@ -8,7 +8,7 @@ import john.wick.githubscoring.infrastructure.client.dto.RepoSearchResponse;
 import john.wick.githubscoring.infrastructure.client.errors.ClientException;
 import john.wick.githubscoring.infrastructure.client.errors.EmptyResultException;
 import john.wick.githubscoring.infrastructure.client.errors.RateLimitException;
-import john.wick.githubscoring.infrastructure.client.util.RepositoryMapper;
+import john.wick.githubscoring.infrastructure.client.util.RepositoryDomainMapper;
 import john.wick.githubscoring.infrastructure.client.util.SearchQueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,14 +34,14 @@ public class GithubClientImpl implements GithubClient {
 
 
     private final WebClient webClient;
-    private final RepositoryMapper mapper;
+    private final RepositoryDomainMapper mapper;
 
 
     public GithubClientImpl(
             WebClient.Builder webClientBuilder,
             @Value("${github.api.base-url}") String apiBaseUrl,
             @Value("${github.api.token:}") String apiToken,
-            RepositoryMapper mapper
+            RepositoryDomainMapper mapper
     ) {
 
         WebClient.Builder builder = webClientBuilder
@@ -79,7 +79,7 @@ public class GithubClientImpl implements GithubClient {
                 .build();
 
         RepoSearchResponse response =
-                singlePageCallToSearchAPI(query, searchCriteria.page(), searchCriteria.size()).block();
+                singlePageCallToSearchAPI(query, searchCriteria.page(), searchCriteria.size(), searchCriteria.sortDirection()).block();
 
         if (response == null) {
             throw new EmptyResultException("The search returned no result.");
@@ -104,7 +104,7 @@ public class GithubClientImpl implements GithubClient {
      * @return a Mono of RepoSearchResponse
      */
     private Mono<RepoSearchResponse> singlePageCallToSearchAPI(
-            String searchQuery, int page, int perPage) {
+            String searchQuery, int page, int perPage, String order) {
 
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -112,6 +112,7 @@ public class GithubClientImpl implements GithubClient {
                         .queryParam("q", searchQuery)
                         .queryParam("page", page)
                         .queryParam("per_page", perPage)
+                        .queryParam("order", order)
                         .build())
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, response -> {

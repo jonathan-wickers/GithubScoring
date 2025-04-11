@@ -4,7 +4,7 @@ import john.wick.githubscoring.domain.model.RepoSearchCriteria;
 import john.wick.githubscoring.domain.model.Repository;
 import john.wick.githubscoring.infrastructure.client.dto.PaginatedRepositories;
 import john.wick.githubscoring.infrastructure.client.dto.RepoSearchResponse;
-import john.wick.githubscoring.infrastructure.client.util.RepositoryMapper;
+import john.wick.githubscoring.infrastructure.client.util.RepositoryDomainMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 class GithubClientImplTest {
 
     @Mock
-    private RepositoryMapper mapper;
+    private RepositoryDomainMapper mapper;
 
     @Mock
     private WebClient webClient;
@@ -103,6 +103,6 @@ class GithubClientImplTest {
         assertThat(result.getRepositories().getFirst().getName()).isEqualTo("test-repo");
         assertThat(result.getTotalNbRepo()).isEqualTo(1);
         assertThat(result.getCurrentPage()).isEqualTo(0);
-        assertThat(result.getTotalNbPage()).isEqualTo(1);
+        assertThat(result.gettotalNbPage()).isEqualTo(1);
     }
 }

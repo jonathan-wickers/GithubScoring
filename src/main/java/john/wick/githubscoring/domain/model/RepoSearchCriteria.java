@@ -15,6 +15,10 @@ public record RepoSearchCriteria(
         this(language, createdAfter, keyword, 0, 20, "desc");
     }
 
+    public RepoSearchCriteria(String language, LocalDate createdAfter) {
+        this(language, createdAfter, "", 0, 20, "desc");
+    }
+
     public boolean hasLanguage() {
         return language != null && !language.isBlank();
     }

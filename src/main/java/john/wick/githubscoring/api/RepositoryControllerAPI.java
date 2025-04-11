@@ -1,4 +1,4 @@
-package john.wick.githubscoring.infrastructure.controller;
+package john.wick.githubscoring.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -58,5 +58,6 @@ public interface RepositoryControllerAPI {
 
             @Parameter(description = "Sort direction ('asc' or 'desc')")
             @RequestParam(defaultValue = "desc")
+            @Pattern(regexp = "^(asc|desc)$", message = "Sort direction must be either 'asc' or 'desc'")
             String sortDirection);
 }
