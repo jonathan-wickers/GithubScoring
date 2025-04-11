@@ -5,10 +5,10 @@ import john.wick.githubscoring.domain.model.Repository;
 import john.wick.githubscoring.domain.port.GithubClient;
 import john.wick.githubscoring.domain.port.RepositoryScoreCalculator;
 import john.wick.githubscoring.domain.port.RepositorySearchService;
+import john.wick.githubscoring.infrastructure.client.dto.PaginatedRepositories;
 import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
-import java.util.List;
 
 @Component
 public class RepositorySearchServiceImpl implements RepositorySearchService {
@@ -24,7 +24,7 @@ public class RepositorySearchServiceImpl implements RepositorySearchService {
 
 
     @Override
-    public List<Repository> searchRepositories(RepoSearchCriteria criteria) {
+    public PaginatedRepositories searchRepositories(RepoSearchCriteria criteria) {
         if (criteria == null || !criteria.hasAtLeastOneCriteria()) {
             throw new IllegalArgumentException("At least one search criteria must be provided");
         }
@@ -32,9 +32,9 @@ public class RepositorySearchServiceImpl implements RepositorySearchService {
             throw new IllegalArgumentException("Date must be in the past");
         }
 
-        List<Repository> repositories = githubClient.searchRepositories(criteria);
+        PaginatedRepositories response = githubClient.searchRepositories(criteria);
 
-        for (Repository repo : repositories) {
+        for (Repository repo : response.getRepositories()) {
             repo.setScore(calculator.calculateScore(
                     repo.getStars(),
                     repo.getForks(),
@@ -43,9 +43,10 @@ public class RepositorySearchServiceImpl implements RepositorySearchService {
             ));
         }
 
-        return repositories.stream()
+        response.getRepositories().stream()
                 .sorted(Comparator.comparing(Repository::getScore).reversed())
                 .toList();
+        return response;
     }
 
 }

@@ -1,4 +1,4 @@
-package john.wick.githubscoring.infrastructure.client;
+package john.wick.githubscoring.infrastructure.client.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

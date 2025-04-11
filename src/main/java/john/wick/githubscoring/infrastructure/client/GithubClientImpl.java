@@ -3,6 +3,8 @@ package john.wick.githubscoring.infrastructure.client;
 import john.wick.githubscoring.domain.model.RepoSearchCriteria;
 import john.wick.githubscoring.domain.model.Repository;
 import john.wick.githubscoring.domain.port.GithubClient;
+import john.wick.githubscoring.infrastructure.client.dto.PaginatedRepositories;
+import john.wick.githubscoring.infrastructure.client.dto.RepoSearchResponse;
 import john.wick.githubscoring.infrastructure.client.errors.ClientException;
 import john.wick.githubscoring.infrastructure.client.errors.RateLimitException;
 import john.wick.githubscoring.infrastructure.client.util.SearchQueryBuilder;
@@ -20,10 +22,7 @@ import reactor.util.retry.Retry;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
@@ -79,7 +78,7 @@ public class GithubClientImpl implements GithubClient {
      * @param searchCriteria the criteria used to filter repositories
      * @return List of repositories fitting the search criteria
      */
-    public List<Repository> searchRepositories(RepoSearchCriteria searchCriteria) {
+    public PaginatedRepositories searchRepositories(RepoSearchCriteria searchCriteria) {
 
         String query = new SearchQueryBuilder()
                 .withKeyword(searchCriteria.keyword())
@@ -87,63 +86,19 @@ public class GithubClientImpl implements GithubClient {
                 .withCreatedAfter(searchCriteria.createdAfter())
                 .build();
 
-        RepoSearchResponse firstPageResponse =
-                singlePageCallToSearchAPI(query, 1, pageSize).block();
+        RepoSearchResponse response =
+                singlePageCallToSearchAPI(query, searchCriteria.page(), searchCriteria.size()).block();
 
-        if (firstPageResponse == null || firstPageResponse.getItems().isEmpty()) {
-            return Collections.emptyList();
-        }
+        int totalItems = response.getTotalCount();
+        int totalPages = (int) Math.ceil((double) totalItems / searchCriteria.page());
 
-        int totalItems = firstPageResponse.getTotalCount();
-        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
-        int pagesToFetch = Math.min(totalPages, maxPages);
-
-        List<Repository> repositories = firstPageResponse.getItems().stream()
+        List<Repository> repositories = response.getItems().stream()
                 .map(mapper::toRepository)
                 .collect(Collectors.toList());
 
+        return new PaginatedRepositories(repositories, searchCriteria.page(), totalPages, totalItems);
 
-        if (pagesToFetch > 1) {
-            List<CompletableFuture<List<Repository>>> parallelCalls = createParallelCalls(pagesToFetch, query);
-            CompletableFuture.allOf(parallelCalls.toArray(new CompletableFuture[0])).join();
-
-            for (CompletableFuture<List<Repository>> future : parallelCalls) {
-                repositories.addAll(future.join());
-            }
-
-        }
-
-        return repositories;
     }
-
-    /**
-     * Creates the parallel calls to the repository search API.
-     *
-     * @param pagesToFetch Number of pages to call
-     * @param query        search query sent to the API
-     * @return List of API calls that will be executed in the future that will contain a List of Repository objects.
-     **/
-
-    private List<CompletableFuture<List<Repository>>> createParallelCalls(int pagesToFetch, String query) {
-        List<CompletableFuture<List<Repository>>> futures = new ArrayList<>();
-
-        for (int pageNb = 2; pageNb <= pagesToFetch; pageNb++) {
-            final int currentPage = pageNb;
-
-            CompletableFuture<List<Repository>> future = CompletableFuture.supplyAsync(() -> {
-                RepoSearchResponse response = singlePageCallToSearchAPI(query, currentPage, pageSize).block();
-                return response != null ?
-                        response.getItems().stream()
-                                .map(mapper::toRepository)
-                                .collect(Collectors.toList())
-                        : Collections.emptyList();
-
-            }, executor);
-            futures.add(future);
-        }
-        return futures;
-    }
-
 
     /**
      * Makes a single-page call to the repository search endpoint.

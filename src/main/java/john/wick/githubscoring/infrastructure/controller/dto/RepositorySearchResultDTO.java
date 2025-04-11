@@ -4,6 +4,8 @@ import java.util.List;
 
 public record RepositorySearchResultDTO(
         List<RepositoryDTO> repositories,
-        int totalCount
+        int totalNbRepo,
+        int totalNbPages,
+        int currentPage
 ) {
 }

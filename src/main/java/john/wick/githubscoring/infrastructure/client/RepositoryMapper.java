@@ -1,6 +1,7 @@
 package john.wick.githubscoring.infrastructure.client;
 
 import john.wick.githubscoring.domain.model.Repository;
+import john.wick.githubscoring.infrastructure.client.dto.RepoSearchResponse;
 import org.springframework.stereotype.Component;
 
 @Component

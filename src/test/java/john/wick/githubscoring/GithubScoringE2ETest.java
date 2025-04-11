@@ -42,7 +42,7 @@ class GithubScoringE2ETest {
 
         String responseBody = result.getResponse().getContentAsString();
         assertThat(responseBody).contains("repositories");
-        assertThat(responseBody).contains("totalCount");
+        assertThat(responseBody).contains("totalNbRepo");
 
         assertThat(responseBody).containsPattern("\"repositories\":\\s*\\[\\s*\\{");
 

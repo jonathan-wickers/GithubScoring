@@ -26,8 +26,17 @@ public class RepositoryMapper {
                 .collect(Collectors.toList());
     }
 
-    public static RepositorySearchResultDTO toSearchResultDto(List<Repository> domains) {
-        List<RepositoryDTO> dtos = toDtoList(domains);
-        return new RepositorySearchResultDTO(dtos, dtos.size());
+    public static RepositorySearchResultDTO toSearchResultDto(
+            List<Repository> repositories,
+            int totalNbRepo,
+            int totalNbPage,
+            int currentPage
+    ) {
+        List<RepositoryDTO> repositoryDTOs = repositories.stream()
+                .map(RepositoryMapper::toDto)
+                .collect(Collectors.toList());
+
+        var totalPages = (int) Math.ceil((double) totalNbPage / totalNbRepo);
+        return new RepositorySearchResultDTO(repositoryDTOs, totalNbRepo, totalPages, currentPage);
     }
 }

@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import john.wick.githubscoring.infrastructure.controller.dto.RepositorySearchResultDTO;
@@ -18,7 +19,7 @@ public interface RepositoryControllerAPI {
 
     @Operation(
             summary = "Search repositories",
-            description = "Search for GitHub repositories based on language, creation date, and keywords",
+            description = "Search for GitHub repositories based on language, creation date, and keywords with pagination support",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -28,7 +29,7 @@ public interface RepositoryControllerAPI {
                                     schema = @Schema(implementation = RepositorySearchResultDTO.class)
                             )
                     ),
-                    @ApiResponse(responseCode = "400", description = "Invalid input parameters"),
+                    @ApiResponse(responseCode = "400", description = "Invalid input parameters or missing search criteria"),
                     @ApiResponse(responseCode = "500", description = "Server error")
             }
     )
@@ -44,6 +45,17 @@ public interface RepositoryControllerAPI {
 
             @Parameter(description = "Keyword to search in repository name and description")
             @RequestParam(required = false) @Size(max = 50)
-            String keyword);
+            String keyword,
 
+            @Parameter(description = "Page number (zero-based)")
+            @RequestParam(defaultValue = "0")
+            int page,
+
+            @Parameter(description = "Number of results per page (max 100)")
+            @RequestParam(defaultValue = "20") @Max(100)
+            int size,
+
+            @Parameter(description = "Sort direction ('asc' or 'desc')")
+            @RequestParam(defaultValue = "desc")
+            String sortDirection);
 }

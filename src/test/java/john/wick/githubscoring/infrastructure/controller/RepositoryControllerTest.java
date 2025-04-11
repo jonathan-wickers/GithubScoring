@@ -67,7 +67,7 @@ class RepositoryControllerTest {
 
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().repositories()).isEmpty();
-        assertThat(response.getBody().totalCount()).isZero();
+        assertThat(response.getBody().totalNbRepo()).isZero();
         verify(searchService).searchRepositories(any(RepoSearchCriteria.class));
     }
 

@@ -5,8 +5,16 @@ import java.time.LocalDate;
 public record RepoSearchCriteria(
         String language,
         LocalDate createdAfter,
-        String keyword
+        String keyword,
+        int page,
+        int size,
+        String sortDirection
+
 ) {
+    public RepoSearchCriteria(String language, LocalDate createdAfter, String keyword) {
+        this(language, createdAfter, keyword, 0, 20, "desc");
+    }
+
     public boolean hasLanguage() {
         return language != null && !language.isBlank();
     }
@@ -22,4 +30,5 @@ public record RepoSearchCriteria(
     public boolean isDateInPast() {
         return createdAfter == null || createdAfter.isBefore(LocalDate.now());
     }
+
 }

@@ -2,6 +2,7 @@ package john.wick.githubscoring.infrastructure.client;
 
 import john.wick.githubscoring.domain.model.RepoSearchCriteria;
 import john.wick.githubscoring.domain.model.Repository;
+import john.wick.githubscoring.infrastructure.client.dto.RepoSearchResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
