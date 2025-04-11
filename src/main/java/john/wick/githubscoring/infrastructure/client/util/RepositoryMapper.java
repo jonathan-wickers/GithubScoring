@@ -1,4 +1,4 @@
-package john.wick.githubscoring.infrastructure.client;
+package john.wick.githubscoring.infrastructure.client.util;
 
 import john.wick.githubscoring.domain.model.Repository;
 import john.wick.githubscoring.infrastructure.client.dto.RepoSearchResponse;

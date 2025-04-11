@@ -6,7 +6,9 @@ import john.wick.githubscoring.domain.port.GithubClient;
 import john.wick.githubscoring.infrastructure.client.dto.PaginatedRepositories;
 import john.wick.githubscoring.infrastructure.client.dto.RepoSearchResponse;
 import john.wick.githubscoring.infrastructure.client.errors.ClientException;
+import john.wick.githubscoring.infrastructure.client.errors.EmptyResultException;
 import john.wick.githubscoring.infrastructure.client.errors.RateLimitException;
+import john.wick.githubscoring.infrastructure.client.util.RepositoryMapper;
 import john.wick.githubscoring.infrastructure.client.util.SearchQueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,6 +81,9 @@ public class GithubClientImpl implements GithubClient {
         RepoSearchResponse response =
                 singlePageCallToSearchAPI(query, searchCriteria.page(), searchCriteria.size()).block();
 
+        if (response == null) {
+            throw new EmptyResultException("The search returned no result.");
+        }
         int totalNbRepo = response.getTotalCount();
         int totalPages = (int) Math.ceil((double) totalNbRepo / searchCriteria.size());
 

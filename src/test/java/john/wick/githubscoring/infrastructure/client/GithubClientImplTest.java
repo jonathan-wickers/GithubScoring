@@ -4,6 +4,7 @@ import john.wick.githubscoring.domain.model.RepoSearchCriteria;
 import john.wick.githubscoring.domain.model.Repository;
 import john.wick.githubscoring.infrastructure.client.dto.PaginatedRepositories;
 import john.wick.githubscoring.infrastructure.client.dto.RepoSearchResponse;
+import john.wick.githubscoring.infrastructure.client.util.RepositoryMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

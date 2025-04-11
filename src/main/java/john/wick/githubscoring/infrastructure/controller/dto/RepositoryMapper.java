@@ -36,7 +36,6 @@ public class RepositoryMapper {
                 .map(RepositoryMapper::toDto)
                 .collect(Collectors.toList());
 
-        var totalPages = (int) Math.ceil((double) totalNbPage / totalNbRepo);
-        return new RepositorySearchResultDTO(repositoryDTOs, totalNbRepo, totalPages, currentPage);
+        return new RepositorySearchResultDTO(repositoryDTOs, totalNbRepo, totalNbPage, currentPage);
     }
 }

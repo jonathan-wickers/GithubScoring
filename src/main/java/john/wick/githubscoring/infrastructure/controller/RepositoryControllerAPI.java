@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import john.wick.githubscoring.infrastructure.controller.dto.RepositorySearchResultDTO;
@@ -48,7 +49,7 @@ public interface RepositoryControllerAPI {
             String keyword,
 
             @Parameter(description = "Page number (zero-based)")
-            @RequestParam(defaultValue = "0")
+            @RequestParam(defaultValue = "1") @Min(1)
             int page,
 
             @Parameter(description = "Number of results per page (max 100)")

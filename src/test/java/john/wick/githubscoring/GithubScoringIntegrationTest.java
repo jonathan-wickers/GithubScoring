@@ -3,6 +3,7 @@ package john.wick.githubscoring;
 import john.wick.githubscoring.domain.model.Repository;
 import john.wick.githubscoring.domain.port.GithubClient;
 import john.wick.githubscoring.infrastructure.client.dto.PaginatedRepositories;
+import john.wick.githubscoring.infrastructure.client.errors.EmptyResultException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -62,7 +62,7 @@ class GithubScoringIntegrationTest {
         mockMvc.perform(get("/api/repositories/search")
                         .param("language", "java")
                         .param("keyword", "spring")
-                        .param("page", "0")
+                        .param("page", "1")
                         .param("size", "20")
                         .param("sortDirection", "desc"))
                 .andExpect(status().isOk())
@@ -77,28 +77,17 @@ class GithubScoringIntegrationTest {
     @Test
     void handlesEmptySearchResults() throws Exception {
         when(githubClient.searchRepositories(any()))
-                .thenReturn(new PaginatedRepositories(Collections.emptyList(), 0, 0, 0));
+                .thenThrow(new EmptyResultException("The search returned no result."));
 
         mockMvc.perform(get("/api/repositories/search")
-                        .param("language", "brainfuck")
-                        .param("page", "0")
+                        .param("language", "plopfoobar")
+                        .param("page", "1")
                         .param("size", "20")
                         .param("sortDirection", "desc"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.repositories", hasSize(0)))
-                .andExpect(jsonPath("$.totalNbRepo").value(0))
-                .andExpect(jsonPath("$.totalNbPages").value(0))
-                .andExpect(jsonPath("$.currentPage").value(0));
+                .andExpect(status().isNoContent())
+                .andExpect(content().string("Github returned no results for your search."));
     }
 
-    @Test
-    void returnsBadRequestWhenNoSearchCriteriaProvided() throws Exception {
-        mockMvc.perform(get("/api/repositories/search")
-                        .param("page", "0")
-                        .param("size", "20")
-                        .param("sortDirection", "desc"))
-                .andExpect(status().isBadRequest());
-    }
 
     @TestConfiguration
     static class TestConfig {

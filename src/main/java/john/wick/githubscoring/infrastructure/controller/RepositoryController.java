@@ -1,6 +1,7 @@
 package john.wick.githubscoring.infrastructure.controller;
 
 import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import john.wick.githubscoring.domain.model.RepoSearchCriteria;
@@ -43,7 +44,7 @@ public class RepositoryController implements RepositoryControllerAPI {
             String createdAfter,
             @RequestParam(required = false) @Size(max = 50)
             String keyword,
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") @Min(1) int page,
             @RequestParam(defaultValue = "20") @Max(100) int size,
             @RequestParam(defaultValue = "desc") String sortDirection
     ) {
