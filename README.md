@@ -107,19 +107,29 @@ Using IntelliJ HTTP Client:
 
 ### API Endpoints
 
-- `GET /api/repositories/search`
-    - Search repositories with optional filtering
-    - Parameters:
-        - `language`: Programming language filter
-        - `createdAfter`: Filter for repositories created after date (YYYY-MM-DD) (optional)
-        - `keyword`: Search term for repository name/description (optional)
+Search repositories with optional filtering and scoring.
+
+**Parameters:**
+
+| Parameter | Type | Default | Required | Description |
+|-----------|------|---------|----------|-------------|
+| `language` | String | - | No | Programming language filter (max 50 chars) |
+| `createdAfter` | String | - | No | Filter repositories created after date (format: YYYY-MM-DD) |
+| `keyword` | String | - | No | Search term for repository name/description (max 50 chars) |
+| `page` | Integer | 1 | No | Page number (min: 1) |
+| `size` | Integer | 20 | No | Results per page (max: 100) |
+| `sortDirection` | String | "desc" | No | Sort order: "asc" or "desc" |
+
+**Example Request:**
+GET /api/repositories/search?language=java&createdAfter=2023-01-01&keyword=spring&page=1&size=20&sortDirection=desc
+
+**Validation Rules:**
+- At least one search criteria must be provided (language, createdAfter, or keyword)
+- Date must be in format YYYY-MM-DD
+- Date must be in the past
+- Sort direction must be "asc" or "desc"
 
 # Improvements:
 
-I am calling the Github API using CompletableFuture, I could have used structured concurrency instead, but I had
-surprises with the webclient over the good old RestTemplate that I was used to and decided that done is better than
-perfect.
-Also, it hit me too late, but I could have paginated the results of my own API the same way Github does to give less
-results but much quicker instead of creating many parallel calls, giving more results in a slower time.
-The implementation of the client for the Github API can be improved to handle more the error cases.
-Overall, it does the job, but there is room for improvements. Hopefully it will be enough to talk about it.
+I now just call the github API, as a wrapper, not doing extra calls. THe code is much simpler.
+I need to add more tests, but there are some basics already.
