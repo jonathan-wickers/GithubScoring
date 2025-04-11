@@ -23,7 +23,6 @@ import reactor.util.retry.Retry;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 @Component
@@ -33,9 +32,6 @@ public class GithubClientImpl implements GithubClient {
 
 
     private final WebClient webClient;
-    private final ExecutorService executor;
-    private final int pageSize;
-    private final int maxPages;
     private final RepositoryMapper mapper;
 
 
@@ -43,9 +39,6 @@ public class GithubClientImpl implements GithubClient {
             WebClient.Builder webClientBuilder,
             @Value("${github.api.base-url}") String apiBaseUrl,
             @Value("${github.api.token:}") String apiToken,
-            @Value("${github.api.page-size}") int pageSize,
-            @Value("${github.api.max-pages}") int maxPages,
-            ExecutorService executor,
             RepositoryMapper mapper
     ) {
 
@@ -62,9 +55,6 @@ public class GithubClientImpl implements GithubClient {
         if (apiToken != null && !apiToken.isBlank()) {
             builder.defaultHeader(HttpHeaders.AUTHORIZATION, "token " + apiToken);
         }
-        this.executor = executor;
-        this.pageSize = pageSize;
-        this.maxPages = maxPages;
         this.webClient = builder.build();
         this.mapper = mapper;
 

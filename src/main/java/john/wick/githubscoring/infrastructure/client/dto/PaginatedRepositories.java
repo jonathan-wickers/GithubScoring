@@ -21,6 +21,10 @@ public class PaginatedRepositories {
         return repositories;
     }
 
+    public void setRepositories(List<Repository> repositories) {
+        this.repositories = repositories;
+    }
+
     public int getCurrentPage() {
         return currentPage;
     }
@@ -31,9 +35,5 @@ public class PaginatedRepositories {
 
     public int getTotalNbRepo() {
         return totalNbRepo;
-    }
-
-    public void setRepositories(List<Repository> repositories) {
-        this.repositories = repositories;
     }
 }

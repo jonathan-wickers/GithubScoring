@@ -14,7 +14,6 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -24,9 +23,6 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class GithubClientImplTest {
-
-    @Mock
-    private ExecutorService executor;
 
     @Mock
     private RepositoryMapper mapper;
@@ -47,9 +43,6 @@ class GithubClientImplTest {
                 webClientBuilder,
                 "https://api.github.com",
                 "test-token",
-                30,
-                10,
-                executor,
                 mapper
         );
     }
