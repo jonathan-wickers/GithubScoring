@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleDateTimeParseException(DateTimeParseException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body("Invalid date format: " + ex.getParsedString());
+                .body(STR."Invalid date format: \{ex.getParsedString()}");
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleGenericException(Exception ex) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("An unexpected error occurred: " + ex.getMessage());
+                .body(STR."An unexpected error occurred: \{ex.getMessage()}");
     }
 
     @ExceptionHandler(ConstraintViolationException.class)

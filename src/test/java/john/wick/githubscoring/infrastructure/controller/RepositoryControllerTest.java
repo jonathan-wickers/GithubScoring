@@ -53,8 +53,8 @@ class RepositoryControllerTest {
 
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().repositories()).hasSize(1);
-        assertThat(response.getBody().repositories().get(0).name()).isEqualTo("spring-boot");
-        assertThat(response.getBody().repositories().get(0).score()).isEqualTo(4.5);
+        assertThat(response.getBody().repositories().getFirst().name()).isEqualTo("spring-boot");
+        assertThat(response.getBody().repositories().getFirst().score()).isEqualTo(4.5);
     }
 
     @Test

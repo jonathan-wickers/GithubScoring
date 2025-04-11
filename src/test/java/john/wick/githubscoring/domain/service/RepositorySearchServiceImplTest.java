@@ -65,7 +65,7 @@ class RepositorySearchServiceImplTest {
     private Repository createRepo(String name, int stars, int forks) {
         return new Repository(
                 name,
-                "Description for " + name,
+                STR."Description for \{name}",
                 "java",
                 stars,
                 forks,

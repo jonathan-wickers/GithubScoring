@@ -48,8 +48,8 @@ public class RepositoryController implements RepositoryControllerAPI {
 
         RepoSearchCriteria criteria = new RepoSearchCriteria(language, createdAfterAsDate, keyword);
         if (criteria.hasAtLeastOneCriteria()) {
-            List<Repository> domainResults = repositorySearchService.searchRepositories(criteria);
-            RepositorySearchResultDTO resultDto = RepositoryMapper.toSearchResultDto(domainResults);
+            List<Repository> repositories = repositorySearchService.searchRepositories(criteria);
+            RepositorySearchResultDTO resultDto = RepositoryMapper.toSearchResultDto(repositories);
             return ResponseEntity.ok(resultDto);
         } else {
             throw new IllegalArgumentException("At least one search criteria must be provided");
