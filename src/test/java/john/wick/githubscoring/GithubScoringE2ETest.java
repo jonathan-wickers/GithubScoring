@@ -29,7 +29,7 @@ class GithubScoringE2ETest {
                         .param("createdAfter", "2020-01-01"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.repositories").isArray())
-                .andExpect(jsonPath("$.totalCount").isNumber())
+                .andExpect(jsonPath("$.totalNbRepo").isNumber())
                 .andExpect(jsonPath("$.repositories[*].name").exists())
                 .andExpect(jsonPath("$.repositories[*].description").exists())
                 .andExpect(jsonPath("$.repositories[*].language").exists())

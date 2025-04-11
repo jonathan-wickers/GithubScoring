@@ -55,7 +55,7 @@ public class RepositoryController implements RepositoryControllerAPI {
             PaginatedRepositories paginatedResult = repositorySearchService.searchRepositories(criteria);
             RepositorySearchResultDTO resultDto = RepositoryMapper.toSearchResultDto(
                     paginatedResult.getRepositories(),
-                    paginatedResult.getTotalSize(),
+                    paginatedResult.getTotalNbRepo(),
                     paginatedResult.getTotalNbPage(),
                     paginatedResult.getCurrentPage());
             return ResponseEntity.ok(resultDto);

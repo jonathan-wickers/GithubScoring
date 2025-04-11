@@ -3,6 +3,7 @@ package john.wick.githubscoring.infrastructure.controller;
 import john.wick.githubscoring.domain.model.RepoSearchCriteria;
 import john.wick.githubscoring.domain.model.Repository;
 import john.wick.githubscoring.domain.port.RepositorySearchService;
+import john.wick.githubscoring.infrastructure.client.dto.PaginatedRepositories;
 import john.wick.githubscoring.infrastructure.controller.dto.RepositorySearchResultDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,24 +48,27 @@ class RepositoryControllerTest {
         repo.setScore(4.5);
 
         when(searchService.searchRepositories(any(RepoSearchCriteria.class)))
-                .thenReturn(List.of(repo));
+                .thenReturn(new PaginatedRepositories(List.of(repo), 0, 1, 1));
 
         ResponseEntity<RepositorySearchResultDTO> response = controller
-                .searchRepositories("java", "2022-01-01", "spring");
+                .searchRepositories("java", "2022-01-01", "spring", 0, 20, "desc");
 
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().repositories()).hasSize(1);
         assertThat(response.getBody().repositories().getFirst().name()).isEqualTo("spring-boot");
         assertThat(response.getBody().repositories().getFirst().score()).isEqualTo(4.5);
+        assertThat(response.getBody().totalNbRepo()).isEqualTo(1);
+        assertThat(response.getBody().totalNbPages()).isEqualTo(1);
+        assertThat(response.getBody().currentPage()).isEqualTo(0);
     }
 
     @Test
     void noResultsReturnsEmptyList() {
         when(searchService.searchRepositories(any(RepoSearchCriteria.class)))
-                .thenReturn(Collections.emptyList());
+                .thenReturn(new PaginatedRepositories(Collections.emptyList(), 0, 0, 0));
 
         ResponseEntity<RepositorySearchResultDTO> response = controller
-                .searchRepositories("cobol", null, null);
+                .searchRepositories("cobol", null, null, 0, 20, "desc");
 
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().repositories()).isEmpty();
@@ -71,4 +76,12 @@ class RepositoryControllerTest {
         verify(searchService).searchRepositories(any(RepoSearchCriteria.class));
     }
 
+    @Test
+    void throwsExceptionWhenNoCriteriaProvided() {
+        assertThatThrownBy(() ->
+                controller.searchRepositories(null, null, null, 0, 20, "desc")
+        )
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("At least one search criteria must be provided");
+    }
 }

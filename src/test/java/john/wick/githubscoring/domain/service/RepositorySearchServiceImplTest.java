@@ -4,6 +4,7 @@ import john.wick.githubscoring.domain.model.RepoSearchCriteria;
 import john.wick.githubscoring.domain.model.Repository;
 import john.wick.githubscoring.domain.port.GithubClient;
 import john.wick.githubscoring.domain.port.RepositoryScoreCalculator;
+import john.wick.githubscoring.infrastructure.client.dto.PaginatedRepositories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,19 +41,22 @@ class RepositorySearchServiceImplTest {
         Repository repo2 = createRepo("repo2", 500, 200);
         Repository repo3 = createRepo("repo3", 200, 100);
 
+        List<Repository> repoList = Arrays.asList(repo1, repo2, repo3);
+
         when(scoreCalculator.calculateScore(anyInt(), anyInt(), any(), any()))
                 .thenReturn(5.0).thenReturn(9.0).thenReturn(7.0);
 
         when(githubClient.searchRepositories(any()))
-                .thenReturn(Arrays.asList(repo1, repo2, repo3));
+                .thenReturn(new PaginatedRepositories(repoList, 3, 1, 0));
 
-        List<Repository> results = service.searchRepositories(
+        PaginatedRepositories results = service.searchRepositories(
                 new RepoSearchCriteria("java", null, null));
 
-        assertThat(results).hasSize(3);
-        assertThat(results.get(0).getName()).isEqualTo("repo2");
-        assertThat(results.get(1).getName()).isEqualTo("repo3");
-        assertThat(results.get(2).getName()).isEqualTo("repo1");
+        List<Repository> repositories = results.getRepositories();
+        assertThat(repositories).hasSize(3);
+        assertThat(repositories.get(0).getName()).isEqualTo("repo2");
+        assertThat(repositories.get(1).getName()).isEqualTo("repo3");
+        assertThat(repositories.get(2).getName()).isEqualTo("repo1");
     }
 
     @Test
@@ -74,5 +78,4 @@ class RepositorySearchServiceImplTest {
         );
     }
 }
-
 

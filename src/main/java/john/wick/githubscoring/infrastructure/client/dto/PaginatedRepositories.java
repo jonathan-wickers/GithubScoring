@@ -8,13 +8,13 @@ public class PaginatedRepositories {
     List<Repository> repositories;
     int currentPage;
     int TotalNbPage;
-    int totalSize;
+    int totalNbRepo;
 
-    public PaginatedRepositories(List<Repository> repositories, int currentPage, int TotalNbPage, int totalSize) {
+    public PaginatedRepositories(List<Repository> repositories, int currentPage, int TotalNbPage, int totalNbRepo) {
         this.repositories = repositories;
         this.currentPage = currentPage;
         this.TotalNbPage = TotalNbPage;
-        this.totalSize = totalSize;
+        this.totalNbRepo = totalNbRepo;
     }
 
     public List<Repository> getRepositories() {
@@ -29,8 +29,11 @@ public class PaginatedRepositories {
         return TotalNbPage;
     }
 
-    public int getTotalSize() {
-        return totalSize;
+    public int getTotalNbRepo() {
+        return totalNbRepo;
     }
 
+    public void setRepositories(List<Repository> repositories) {
+        this.repositories = repositories;
+    }
 }

@@ -2,6 +2,7 @@ package john.wick.githubscoring.infrastructure.client;
 
 import john.wick.githubscoring.domain.model.RepoSearchCriteria;
 import john.wick.githubscoring.domain.model.Repository;
+import john.wick.githubscoring.infrastructure.client.dto.PaginatedRepositories;
 import john.wick.githubscoring.infrastructure.client.dto.RepoSearchResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,7 +59,10 @@ class GithubClientImplTest {
         RepoSearchCriteria criteria = new RepoSearchCriteria(
                 "spring",
                 LocalDate.of(2023, 1, 1),
-                "java"
+                "java",
+                0,
+                20,
+                "desc"
         );
 
         Repository repo = new Repository(
@@ -97,11 +101,14 @@ class GithubClientImplTest {
         when(responseSpec.bodyToMono(RepoSearchResponse.class)).thenReturn(Mono.just(response));
         when(mapper.toRepository(any(RepoSearchResponse.RepositoryItem.class))).thenReturn(repo);
 
-        List<Repository> result = githubClient.searchRepositories(criteria);
+        PaginatedRepositories result = githubClient.searchRepositories(criteria);
 
-        assertThat(result).isNotEmpty();
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getName()).isEqualTo("test-repo");
+        assertThat(result).isNotNull();
+        assertThat(result.getRepositories()).isNotEmpty();
+        assertThat(result.getRepositories()).hasSize(1);
+        assertThat(result.getRepositories().getFirst().getName()).isEqualTo("test-repo");
+        assertThat(result.getTotalNbRepo()).isEqualTo(1);
+        assertThat(result.getCurrentPage()).isEqualTo(0);
+        assertThat(result.getTotalNbPage()).isEqualTo(1);
     }
-
 }

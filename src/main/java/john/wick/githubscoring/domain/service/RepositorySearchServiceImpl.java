@@ -43,9 +43,9 @@ public class RepositorySearchServiceImpl implements RepositorySearchService {
             ));
         }
 
-        response.getRepositories().stream()
+        response.setRepositories(response.getRepositories().stream()
                 .sorted(Comparator.comparing(Repository::getScore).reversed())
-                .toList();
+                .toList());
         return response;
     }
 

@@ -89,14 +89,14 @@ public class GithubClientImpl implements GithubClient {
         RepoSearchResponse response =
                 singlePageCallToSearchAPI(query, searchCriteria.page(), searchCriteria.size()).block();
 
-        int totalItems = response.getTotalCount();
-        int totalPages = (int) Math.ceil((double) totalItems / searchCriteria.page());
+        int totalNbRepo = response.getTotalCount();
+        int totalPages = (int) Math.ceil((double) totalNbRepo / searchCriteria.size());
 
         List<Repository> repositories = response.getItems().stream()
                 .map(mapper::toRepository)
                 .collect(Collectors.toList());
 
-        return new PaginatedRepositories(repositories, searchCriteria.page(), totalPages, totalItems);
+        return new PaginatedRepositories(repositories, searchCriteria.page(), totalPages, totalNbRepo);
 
     }
 
