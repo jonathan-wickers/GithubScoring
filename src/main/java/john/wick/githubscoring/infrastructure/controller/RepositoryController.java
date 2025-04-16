@@ -7,8 +7,6 @@ import jakarta.validation.constraints.Size;
 import john.wick.githubscoring.api.RepositoryControllerAPI;
 import john.wick.githubscoring.domain.model.RepoSearchCriteria;
 import john.wick.githubscoring.domain.port.RepositorySearchService;
-import john.wick.githubscoring.infrastructure.client.dto.PaginatedRepositories;
-import john.wick.githubscoring.infrastructure.controller.dto.RepositoryDtoMapper;
 import john.wick.githubscoring.infrastructure.controller.dto.RepositorySearchResultDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -18,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/repositories")
@@ -53,18 +52,18 @@ public class RepositoryController implements RepositoryControllerAPI {
 
         LocalDate createdAfterAsDate = getCreatedAtParam(createdAfter);
 
-        RepoSearchCriteria criteria = new RepoSearchCriteria(language, createdAfterAsDate, keyword, page, size, sortDirection);
-        if (criteria.hasAtLeastOneCriteria()) {
-            PaginatedRepositories paginatedResult = repositorySearchService.searchRepositories(criteria);
-            RepositorySearchResultDTO resultDto = RepositoryDtoMapper.toSearchResultDto(
-                    paginatedResult.getRepositories(),
-                    paginatedResult.getTotalNbRepo(),
-                    paginatedResult.gettotalNbPage(),
-                    paginatedResult.getCurrentPage());
-            return ResponseEntity.ok(resultDto);
-        } else {
-            throw new IllegalArgumentException("At least one search criteria must be provided");
-        }
+        RepoSearchCriteria criteria = new RepoSearchCriteria(
+                language,
+                createdAfterAsDate,
+                keyword,
+                page,
+                size,
+                sortDirection
+        );
+        return ResponseEntity.of(
+                Optional.ofNullable(repositorySearchService.searchRepositories(criteria))
+        );
+
     }
 }
 

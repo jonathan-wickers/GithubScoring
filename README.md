@@ -111,19 +111,20 @@ Search repositories with optional filtering and scoring.
 
 **Parameters:**
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `language` | String | - | No | Programming language filter (max 50 chars) |
-| `createdAfter` | String | - | No | Filter repositories created after date (format: YYYY-MM-DD) |
-| `keyword` | String | - | No | Search term for repository name/description (max 50 chars) |
-| `page` | Integer | 1 | No | Page number (min: 1) |
-| `size` | Integer | 20 | No | Results per page (max: 100) |
-| `sortDirection` | String | "desc" | No | Sort order: "asc" or "desc" |
+| Parameter       | Type    | Default | Required | Description                                                 |
+|-----------------|---------|---------|----------|-------------------------------------------------------------|
+| `language`      | String  | -       | No       | Programming language filter (max 50 chars)                  |
+| `createdAfter`  | String  | -       | No       | Filter repositories created after date (format: YYYY-MM-DD) |
+| `keyword`       | String  | -       | No       | Search term for repository name/description (max 50 chars)  |
+| `page`          | Integer | 1       | No       | Page number (min: 1)                                        |
+| `size`          | Integer | 20      | No       | Results per page (max: 100)                                 |
+| `sortDirection` | String  | "desc"  | No       | Sort order: "asc" or "desc"                                 |
 
 **Example Request:**
 GET /api/repositories/search?language=java&createdAfter=2023-01-01&keyword=spring&page=1&size=20&sortDirection=desc
 
 **Validation Rules:**
+
 - At least one search criteria must be provided (language, createdAfter, or keyword)
 - Date must be in format YYYY-MM-DD
 - Date must be in the past

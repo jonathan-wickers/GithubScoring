@@ -1,13 +1,16 @@
 package john.wick.githubscoring.infrastructure.client;
 
 import john.wick.githubscoring.infrastructure.client.dto.RepoSearchResponse;
+import john.wick.githubscoring.infrastructure.config.FeignConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(
         name = "githubClient",
-        url = "${github.api.base-url}"
+        url = "${github.api.base-url}",
+        configuration = FeignConfig.class
+
 )
 public interface GithubClient {
 

@@ -1,8 +1,8 @@
 package john.wick.githubscoring.domain.port;
 
 import john.wick.githubscoring.domain.model.RepoSearchCriteria;
-import john.wick.githubscoring.infrastructure.client.dto.PaginatedRepositories;
+import john.wick.githubscoring.infrastructure.controller.dto.RepositorySearchResultDTO;
 
 public interface RepositorySearchService {
-    PaginatedRepositories searchRepositories(RepoSearchCriteria criteria);
+    RepositorySearchResultDTO searchRepositories(RepoSearchCriteria criteria);
 }

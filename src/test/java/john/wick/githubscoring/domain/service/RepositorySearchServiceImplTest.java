@@ -5,6 +5,7 @@ import john.wick.githubscoring.domain.model.Repository;
 import john.wick.githubscoring.domain.port.GithubPort;
 import john.wick.githubscoring.domain.port.RepositoryScoreCalculator;
 import john.wick.githubscoring.infrastructure.client.dto.PaginatedRepositories;
+import john.wick.githubscoring.infrastructure.controller.dto.RepositorySearchResultDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -83,15 +85,15 @@ class RepositorySearchServiceImplTest {
 
         PaginatedRepositories paginatedResult = new PaginatedRepositories(repos, 0, 1, 2);
 
-        when(githubPort.searchRepositories(any(RepoSearchCriteria.class))).thenReturn(paginatedResult);
+        when(githubPort.searchRepositories(any(RepoSearchCriteria.class))).thenReturn(Optional.of(paginatedResult));
         when(scoreCalculator.calculateScore(eq(1000), eq(500), any(), any())).thenReturn(4.2);
         when(scoreCalculator.calculateScore(eq(2000), eq(1000), any(), any())).thenReturn(4.8);
 
-        PaginatedRepositories result = service.searchRepositories(criteria);
+        RepositorySearchResultDTO result = service.searchRepositories(criteria);
 
-        assertThat(result.getRepositories()).hasSize(2);
-        assertThat(result.getRepositories().get(0).getScore()).isEqualTo(4.2);
-        assertThat(result.getRepositories().get(1).getScore()).isEqualTo(4.8);
+        assertThat(result.repositories()).hasSize(2);
+        assertThat(result.repositories().get(0).score()).isEqualTo(4.2);
+        assertThat(result.repositories().get(1).score()).isEqualTo(4.8);
 
         verify(scoreCalculator, times(2)).calculateScore(anyInt(), anyInt(), any(), any());
     }

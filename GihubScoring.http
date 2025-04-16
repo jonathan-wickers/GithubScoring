@@ -2,7 +2,9 @@
 GET http://localhost:8080/api/repositories/search?
     language=java&
     createdAfter=2020-01-01&
-    keyword=spring
+    keyword=
+
+
 
 ### Calls the local endpoint
 GET http://localhost:8080/api/repositories/search?

@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
@@ -56,7 +57,7 @@ class GithubScoringIntegrationTest {
         );
 
         when(githubPort.searchRepositories(any()))
-                .thenReturn(new PaginatedRepositories(List.of(springRepo, bootRepo), 0, 1, 2));
+                .thenReturn(Optional.of(new PaginatedRepositories(List.of(springRepo, bootRepo), 0, 1, 2)));
 
         mockMvc.perform(get("/api/repositories/search")
                         .param("language", "java")
