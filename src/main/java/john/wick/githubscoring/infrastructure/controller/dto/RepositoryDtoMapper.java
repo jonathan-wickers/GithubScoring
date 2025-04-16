@@ -3,9 +3,8 @@ package john.wick.githubscoring.infrastructure.controller.dto;
 import john.wick.githubscoring.domain.model.Repository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class RepositoryMapper {
+public class RepositoryDtoMapper {
 
     public static RepositoryDTO toDto(Repository domain) {
         return new RepositoryDTO(
@@ -20,14 +19,16 @@ public class RepositoryMapper {
         );
     }
 
-    public static List<RepositoryDTO> toDtoList(List<Repository> domains) {
-        return domains.stream()
-                .map(RepositoryMapper::toDto)
-                .collect(Collectors.toList());
-    }
+    public static RepositorySearchResultDTO toSearchResultDto(
+            List<Repository> repositories,
+            int totalNbRepo,
+            int totalNbPage,
+            int currentPage
+    ) {
+        List<RepositoryDTO> repositoryDTOs = repositories.stream()
+                .map(RepositoryDtoMapper::toDto)
+                .toList();
 
-    public static RepositorySearchResultDTO toSearchResultDto(List<Repository> domains) {
-        List<RepositoryDTO> dtos = toDtoList(domains);
-        return new RepositorySearchResultDTO(dtos, dtos.size());
+        return new RepositorySearchResultDTO(repositoryDTOs, totalNbRepo, totalNbPage, currentPage);
     }
 }
