@@ -61,9 +61,6 @@ public class GithubPortImpl implements GithubPort {
 
         RepoSearchResponse response = client.searchRepositories(query, searchCriteria.page(), searchCriteria.size(), searchCriteria.sortDirection());
 
-//        RepoSearchResponse response =
-//                singlePageCallToSearchAPI(query, searchCriteria.page(), searchCriteria.size(), searchCriteria.sortDirection()).block();
-
         if (response == null) {
             throw new EmptyResultException("The search returned no result.");
         }

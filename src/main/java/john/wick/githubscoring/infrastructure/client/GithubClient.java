@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(
         name = "githubClient",
-        url = "https://api.github.com"
+        url = "${github.api.base-url}"
 )
 public interface GithubClient {
 
