@@ -2,7 +2,7 @@ package john.wick.githubscoring.domain.service;
 
 import john.wick.githubscoring.domain.model.RepoSearchCriteria;
 import john.wick.githubscoring.domain.model.Repository;
-import john.wick.githubscoring.domain.port.GithubClient;
+import john.wick.githubscoring.domain.port.GithubPort;
 import john.wick.githubscoring.domain.port.RepositoryScoreCalculator;
 import john.wick.githubscoring.infrastructure.client.dto.PaginatedRepositories;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 class RepositorySearchServiceImplTest {
 
     @Mock
-    private GithubClient githubClient;
+    private GithubPort githubPort;
 
     @Mock
     private RepositoryScoreCalculator scoreCalculator;
@@ -33,7 +33,7 @@ class RepositorySearchServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        service = new RepositorySearchServiceImpl(githubClient, scoreCalculator);
+        service = new RepositorySearchServiceImpl(githubPort, scoreCalculator);
     }
 
     @Test
@@ -83,7 +83,7 @@ class RepositorySearchServiceImplTest {
 
         PaginatedRepositories paginatedResult = new PaginatedRepositories(repos, 0, 1, 2);
 
-        when(githubClient.searchRepositories(any(RepoSearchCriteria.class))).thenReturn(paginatedResult);
+        when(githubPort.searchRepositories(any(RepoSearchCriteria.class))).thenReturn(paginatedResult);
         when(scoreCalculator.calculateScore(eq(1000), eq(500), any(), any())).thenReturn(4.2);
         when(scoreCalculator.calculateScore(eq(2000), eq(1000), any(), any())).thenReturn(4.8);
 

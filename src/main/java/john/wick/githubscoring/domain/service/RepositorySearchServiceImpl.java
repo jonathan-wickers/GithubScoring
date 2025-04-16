@@ -2,7 +2,7 @@ package john.wick.githubscoring.domain.service;
 
 import john.wick.githubscoring.domain.model.RepoSearchCriteria;
 import john.wick.githubscoring.domain.model.Repository;
-import john.wick.githubscoring.domain.port.GithubClient;
+import john.wick.githubscoring.domain.port.GithubPort;
 import john.wick.githubscoring.domain.port.RepositoryScoreCalculator;
 import john.wick.githubscoring.domain.port.RepositorySearchService;
 import john.wick.githubscoring.infrastructure.client.dto.PaginatedRepositories;
@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class RepositorySearchServiceImpl implements RepositorySearchService {
 
-    private final GithubClient githubClient;
+    private final GithubPort githubPort;
 
     private final RepositoryScoreCalculator calculator;
 
-    public RepositorySearchServiceImpl(GithubClient githubClient, RepositoryScoreCalculator calculator) {
-        this.githubClient = githubClient;
+    public RepositorySearchServiceImpl(GithubPort githubPort, RepositoryScoreCalculator calculator) {
+        this.githubPort = githubPort;
         this.calculator = calculator;
     }
 
@@ -30,7 +30,7 @@ public class RepositorySearchServiceImpl implements RepositorySearchService {
             throw new IllegalArgumentException("Date must be in the past");
         }
 
-        PaginatedRepositories response = githubClient.searchRepositories(criteria);
+        PaginatedRepositories response = githubPort.searchRepositories(criteria);
 
         for (Repository repo : response.getRepositories()) {
             repo.setScore(calculator.calculateScore(

@@ -1,7 +1,7 @@
 package john.wick.githubscoring;
 
 import john.wick.githubscoring.domain.model.Repository;
-import john.wick.githubscoring.domain.port.GithubClient;
+import john.wick.githubscoring.domain.port.GithubPort;
 import john.wick.githubscoring.infrastructure.client.dto.PaginatedRepositories;
 import john.wick.githubscoring.infrastructure.client.errors.EmptyResultException;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class GithubScoringIntegrationTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private GithubClient githubClient;
+    private GithubPort githubPort;
 
     @Test
     void searchEndpointReturnsCorrectlyFormattedResults() throws Exception {
@@ -55,7 +55,7 @@ class GithubScoringIntegrationTest {
                 LocalDate.now().minusDays(1)
         );
 
-        when(githubClient.searchRepositories(any()))
+        when(githubPort.searchRepositories(any()))
                 .thenReturn(new PaginatedRepositories(List.of(springRepo, bootRepo), 0, 1, 2));
 
         mockMvc.perform(get("/api/repositories/search")
@@ -75,7 +75,7 @@ class GithubScoringIntegrationTest {
 
     @Test
     void handlesEmptySearchResults() throws Exception {
-        when(githubClient.searchRepositories(any()))
+        when(githubPort.searchRepositories(any()))
                 .thenThrow(new EmptyResultException("The search returned no result."));
 
         mockMvc.perform(get("/api/repositories/search")
@@ -92,8 +92,8 @@ class GithubScoringIntegrationTest {
     static class TestConfig {
         @Bean
         @Primary
-        public GithubClient mockGithubClient() {
-            return Mockito.mock(GithubClient.class);
+        public GithubPort mockGithubClient() {
+            return Mockito.mock(GithubPort.class);
         }
     }
 }
