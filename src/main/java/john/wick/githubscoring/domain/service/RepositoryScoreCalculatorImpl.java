@@ -4,6 +4,7 @@ import john.wick.githubscoring.domain.port.RepositoryScoreCalculator;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Service
@@ -11,19 +12,24 @@ public class RepositoryScoreCalculatorImpl implements RepositoryScoreCalculator 
 
     public double calculateScore(int stars, int forks, LocalDate createdAt, LocalDate updatedAt) {
 
-        double baseScore = Math.log10(stars + 1) * 10 + Math.log10(forks * 3 + 1) * 3;
+        final double STARS_WEIGHT = 2;
+        final double FORKS_WEIGHT = 1;
 
-        if (createdAt == null || updatedAt == null) {
-            return baseScore;
+        if (updatedAt == null) {
+            updatedAt = createdAt;
         }
 
-        double ageInDays = ChronoUnit.DAYS.between(createdAt, LocalDate.now());
-        double ageFactor = Math.max(0, 1.3 - (ageInDays / 365 / 10));
+        long daysSinceUpdate = ChronoUnit.DAYS.between(updatedAt, LocalDateTime.now());
+        long repoAgeInDays = ChronoUnit.DAYS.between(createdAt, LocalDateTime.now());
 
-        double daysSinceUpdate = ChronoUnit.DAYS.between(updatedAt, LocalDate.now());
-        double activityFactor = 1.5 - Math.min(0.5, daysSinceUpdate / 100);
+        double recencyFactor = Math.exp(-daysSinceUpdate / 180.0);
 
-        double rawScore = baseScore * ageFactor * activityFactor;
+        double popularityScore = (stars * STARS_WEIGHT) + (forks * FORKS_WEIGHT);
+
+        double starsPerDay = stars / (double) (repoAgeInDays + 1);
+        double normalizedPopularity = popularityScore * (1 + Math.min(1.0, starsPerDay));
+
+        double rawScore = normalizedPopularity * (0.7 + (0.3 * recencyFactor));
         return Math.round(rawScore * 100) / 100.0;
     }
 
