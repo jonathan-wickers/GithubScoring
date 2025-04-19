@@ -7,6 +7,7 @@ import john.wick.githubscoring.infrastructure.controller.dto.RepositorySearchRes
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
@@ -26,12 +27,8 @@ class RepositoryControllerTest {
     @Mock
     private RepositorySearchService searchService;
 
+    @InjectMocks
     private RepositoryController controller;
-
-    @BeforeEach
-    void setUp() {
-        controller = new RepositoryController(searchService);
-    }
 
     @Test
     void returnsMatchingRepositories() {

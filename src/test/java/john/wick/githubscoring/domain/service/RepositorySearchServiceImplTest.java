@@ -9,6 +9,7 @@ import john.wick.githubscoring.infrastructure.controller.dto.RepositorySearchRes
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -31,30 +32,14 @@ class RepositorySearchServiceImplTest {
     @Mock
     private RepositoryScoreCalculator scoreCalculator;
 
+    @InjectMocks
     private RepositorySearchServiceImpl service;
-
-    @BeforeEach
-    void setUp() {
-        service = new RepositorySearchServiceImpl(githubPort, scoreCalculator);
-    }
 
     @Test
     void nullCriteriaThrowsException() {
         assertThatThrownBy(() -> service.searchRepositories(null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("criteria");
-    }
-
-    private Repository createRepo(String name, int stars, int forks) {
-        return new Repository(
-                name,
-                STR."Description for \{name}",
-                "java",
-                stars,
-                forks,
-                LocalDate.now().minusMonths(3),
-                LocalDate.now().minusDays(7)
-        );
     }
 
     @Test
@@ -98,5 +83,29 @@ class RepositorySearchServiceImplTest {
         verify(scoreCalculator, times(2)).calculateScore(anyInt(), anyInt(), any(), any());
     }
 
+    @Test
+    void returnsDtoWithoutResultsIfNoResultsFound() {
+        RepoSearchCriteria criteria = new RepoSearchCriteria("C", null, null);
+
+        when(githubPort.searchRepositories(any(RepoSearchCriteria.class))).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.searchRepositories(criteria))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("No repositories found for the provided criteria");
+
+        verify(scoreCalculator, times(0)).calculateScore(anyInt(), anyInt(), any(), any());
+    }
+
+    private Repository createRepo(String name, int stars, int forks) {
+        return new Repository(
+                name,
+                STR."Description for \{name}",
+                "java",
+                stars,
+                forks,
+                LocalDate.now().minusMonths(3),
+                LocalDate.now().minusDays(7)
+        );
+    }
 }
 

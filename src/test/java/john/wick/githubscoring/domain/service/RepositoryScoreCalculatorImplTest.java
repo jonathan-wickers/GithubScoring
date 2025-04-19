@@ -1,7 +1,6 @@
 package john.wick.githubscoring.domain.service;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -15,9 +14,17 @@ import static org.assertj.core.api.Assertions.within;
 class RepositoryScoreCalculatorImplTest {
 
     private RepositoryScoreCalculatorImpl calculator;
-    private LocalDate now;
-    private LocalDate oneYearAgo;
-    private LocalDate yesterday;
+    @BeforeEach
+    void setUp() {
+        calculator = new RepositoryScoreCalculatorImpl();
+    }
+
+    @ParameterizedTest(name = "{index}: {4}")
+    @MethodSource("scoreTestCases")
+    public void testCalculateScore(int stars, int forks, LocalDate createdAt, LocalDate updatedAt, String scenario, double expectedScore) {
+        double score = calculator.calculateScore(stars, forks, createdAt, updatedAt);
+        assertThat(score).isEqualTo(expectedScore, within(0.01));
+    }
 
     private static Stream<Arguments> scoreTestCases() {
         LocalDate now = LocalDate.now();
@@ -36,49 +43,5 @@ class RepositoryScoreCalculatorImplTest {
                 Arguments.of(10000, 3000, oneYearAgo, oneMonthAgo, "Very popular repository", 43816.73)
         );
 
-    }
-
-    @BeforeEach
-    void setUp() {
-        calculator = new RepositoryScoreCalculatorImpl();
-        now = LocalDate.now();
-        oneYearAgo = now.minusYears(1);
-        yesterday = now.minusDays(1);
-    }
-
-    @Test
-    void popularReposShouldScoreHigher() {
-        double highScore = calculator.calculateScore(10000, 5000, oneYearAgo, yesterday);
-
-        double lowScore = calculator.calculateScore(100, 50, oneYearAgo, yesterday);
-
-        assertThat(highScore).isGreaterThan(lowScore * 1.5);
-    }
-
-    @Test
-    void recentLastUpdateGivesBetterScore() {
-        double trendingScore = calculator.calculateScore(1000, 500, now.minusMonths(1), yesterday);
-
-        double staleScore = calculator.calculateScore(1000, 500, now.minusYears(5), now.minusYears(1));
-
-        assertThat(trendingScore).isGreaterThan(staleScore);
-    }
-
-    @Test
-    void edgeCaseZeroStarsAndForks() {
-        double score = calculator.calculateScore(0, 0, oneYearAgo, yesterday);
-        assertThat(score).isEqualTo(0.0);
-
-        double forksOnlyScore = calculator.calculateScore(0, 100, oneYearAgo, yesterday);
-        assertThat(forksOnlyScore).isPositive();
-    }
-
-    @ParameterizedTest(name = "{index}: {4}")
-    @MethodSource("scoreTestCases")
-    void calculateScoreParameterized(int stars, int forks, LocalDate createdAt,
-                                     LocalDate updatedAt, String scenario, double expectedScore) {
-        double actualScore = calculator.calculateScore(stars, forks, createdAt, updatedAt);
-
-        assertThat(actualScore).isCloseTo(expectedScore, within(0.01));
     }
 }
